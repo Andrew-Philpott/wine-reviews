@@ -22,14 +22,31 @@ function App() {
     country: "",
     search: "",
     results: 10,
+    queryString: "",
   });
   const [countries, setCountries] = React.useState([]);
+  const [results, setResults] = React.useState([]);
   const [error, setError] = React.useState("");
   let currentResults = usePagination(data, inputs.results);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
+  }
+
+  function searchReviews(queryString = inputs.queryString) {
+    let newState = [...data];
+    let filteredReviews = [];
+
+    while (filteredReviews.length === 0) {
+      filteredReviews = newState.filter((x) => x.variety === queryString);
+      filteredReviews = newState.filter((x) => x.title === queryString);
+      filteredReviews = newState.filter((x) => x.winery === queryString);
+      filteredReviews = newState.filter((x) => x.tasterName === queryString);
+      break;
+    }
+    setResults(filteredReviews);
+    return;
   }
 
   React.useEffect(() => {
@@ -111,6 +128,7 @@ function App() {
             <TextField
               type="text"
               name="search"
+              placeholder="Search term"
               value={inputs.search}
               onChange={handleChange}
               variant="outlined"
@@ -119,11 +137,9 @@ function App() {
           <Grid item xs={6}>
             <Grid container>
               <Grid item xs={4}>
-                {" "}
-                <Button>SEARCH</Button>
+                <Button onClick={() => searchReviews()}>SEARCH</Button>
               </Grid>
               <Grid item xs={8}>
-                {" "}
                 <TextField
                   style={{ float: "right" }}
                   select
@@ -184,25 +200,6 @@ function App() {
                       );
                     }
                   })}
-                {/* {data.length !== 0 &&
-                  data.map((x, index) => {
-                    console.log(x);
-                    if (x !== null) {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell>
-                            {x.designation ? x.designation : null}
-                          </TableCell>
-                          <TableCell>{x.country ? x.country : null}</TableCell>
-                          <TableCell>{x.points ? x.points : null}</TableCell>
-                          <TableCell>{x.price ? x.price : null}</TableCell>
-                          <TableCell>
-                            {x.province ? x.province : null}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    }
-                  })} */}
               </TableBody>
             </Table>
           </TableContainer>
