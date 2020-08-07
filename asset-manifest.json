@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/wine-reviews/static/css/main.5f361e03.chunk.css",
+    "main.js": "/wine-reviews/static/js/main.c651cf58.chunk.js",
+    "main.js.map": "/wine-reviews/static/js/main.c651cf58.chunk.js.map",
+    "runtime-main.js": "/wine-reviews/static/js/runtime-main.b8b03613.js",
+    "runtime-main.js.map": "/wine-reviews/static/js/runtime-main.b8b03613.js.map",
+    "static/js/2.d1c3b180.chunk.js": "/wine-reviews/static/js/2.d1c3b180.chunk.js",
+    "static/js/2.d1c3b180.chunk.js.map": "/wine-reviews/static/js/2.d1c3b180.chunk.js.map",
+    "index.html": "/wine-reviews/index.html",
+    "precache-manifest.e58ced2508fed6ca9092fb90e32bb23c.js": "/wine-reviews/precache-manifest.e58ced2508fed6ca9092fb90e32bb23c.js",
+    "service-worker.js": "/wine-reviews/service-worker.js",
+    "static/css/main.5f361e03.chunk.css.map": "/wine-reviews/static/css/main.5f361e03.chunk.css.map",
+    "static/js/2.d1c3b180.chunk.js.LICENSE.txt": "/wine-reviews/static/js/2.d1c3b180.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b8b03613.js",
+    "static/js/2.d1c3b180.chunk.js",
+    "static/css/main.5f361e03.chunk.css",
+    "static/js/main.c651cf58.chunk.js"
+  ]
+}
