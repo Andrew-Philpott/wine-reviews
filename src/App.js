@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Grid, TextField, MenuItem } from "@material-ui/core";
-import { array } from "yargs";
+import {
+  Grid,
+  TextField,
+  MenuItem,
+  Button,
+  TableContainer,
+  Table,
+  TableRow,
+  TableCell,
+  TableHead,
+  TableBody,
+} from "@material-ui/core";
 
 function getReviewsFromLocalStorage() {
   let reviews = localStorage.getItem("reviews");
@@ -11,13 +21,6 @@ function getReviewsFromLocalStorage() {
     return parsedReviews;
   } else {
     return null;
-  }
-}
-
-function setReviewsToLocalStorage(data) {
-  for (let i = 0; i < data.length; i++) {
-    const stringify = JSON.stringify(data[i]);
-    localStorage.setItem(`reviews${i}`, stringify);
   }
 }
 
@@ -32,6 +35,14 @@ function App() {
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
+  }
+
+  async function setReviewsToLocalStorage(reviews) {
+    for (let i = 0; i < reviews.length; i++) {
+      setData([...data, reviews[i]]);
+      const stringify = JSON.stringify(reviews[i]);
+      localStorage.setItem(`reviews${i}`, stringify);
+    }
   }
 
   React.useEffect(() => {
@@ -119,9 +130,66 @@ function App() {
             ></TextField>
           </Grid>
           <Grid item xs={6}>
-            <div style={{ float: "left" }}></div>
-            <div style={{ float: "right" }}></div>
+            <Grid container>
+              <Grid item xs={4}>
+                {" "}
+                <Button>SEARCH</Button>
+              </Grid>
+              <Grid item xs={8}>
+                {" "}
+                <TextField
+                  style={{ float: "right" }}
+                  select
+                  name="countries"
+                  value={inputs.country}
+                  onChange={handleChange}
+                  variant="outlined"
+                  fullWidth
+                >
+                  <MenuItem key={10} value={10}>
+                    10
+                  </MenuItem>
+                  <MenuItem key={20} value={20}>
+                    20
+                  </MenuItem>
+                  <MenuItem key={30} value={30}>
+                    30
+                  </MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
           </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Variety</TableCell>
+                  <TableCell>Winery</TableCell>
+                  <TableCell>Points</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Description</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data &&
+                  data.map((x, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{x.title}</TableCell>
+                        <TableCell>{x.variety}</TableCell>
+                        <TableCell>{x.winery}</TableCell>
+                        <TableCell>{x.points}</TableCell>
+                        <TableCell>{x.price}</TableCell>
+                        <TableCell>{x.description}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
       </Grid>
     </div>
