@@ -1,6 +1,6 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useState } from "react";
 import "./App.css";
+import { Grid, TextField } from "@material-ui/core";
 
 function getReviewsFromLocalStorage() {
   let reviews = localStorage.getItem("reviews");
@@ -15,7 +15,16 @@ function getReviewsFromLocalStorage() {
 
 function App() {
   const [data, setData] = React.useState([]);
+  const [inputs, setInputs] = useState({
+    country: "",
+  });
+  const [countries, setCountries] = React.useState([]);
   const [error, setError] = React.useState("");
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInputs((inputs) => ({ ...inputs, [name]: value }));
+  }
 
   React.useEffect(() => {
     if (data.length === 0) {
@@ -44,7 +53,29 @@ function App() {
     }
   }, []);
 
-  return <div className="App"></div>;
+  return (
+    <div className="App">
+      <Grid container>
+        <Grid item xs={6}>
+          <h1>TOTAL NUMBER OF REVIEWS</h1>
+          <Grid style={{ height: "500px", border: "2px solid black" }}>
+            <h1>number</h1>
+          </Grid>
+        </Grid>
+        <Grid item xs={6}>
+          <h1>Countires of Origin</h1>
+          <TextField
+            select
+            name="countries"
+            value={inputs.country}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+          ></TextField>
+        </Grid>
+      </Grid>
+    </div>
+  );
 }
 
 export default App;
