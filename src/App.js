@@ -83,7 +83,7 @@ function App() {
               variant="outlined"
               fullWidth
             >
-              {countries.values((x) => {
+              {Object.values(countries).map((x) => {
                 console.log(x);
                 return (
                   <MenuItem key={1} value={x}>
