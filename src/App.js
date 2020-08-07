@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, TextField, MenuItem } from "@material-ui/core";
 
 function getReviewsFromLocalStorage() {
   let reviews = localStorage.getItem("reviews");
@@ -13,8 +13,12 @@ function getReviewsFromLocalStorage() {
   }
 }
 
+function setReviewsToLocalStorage(data) {
+  localStorage.setItem("reviews", JSON.stringify(data));
+}
+
 function App() {
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState(null);
   const [inputs, setInputs] = useState({
     country: "",
   });
@@ -27,7 +31,7 @@ function App() {
   }
 
   React.useEffect(() => {
-    if (data.length === 0) {
+    if (data === null) {
       const reviews = getReviewsFromLocalStorage();
       if (reviews === null) {
         (async () => {
@@ -39,8 +43,8 @@ function App() {
               }
             );
             const data = await response.json();
-            localStorage.setItem("reviews", JSON.stringify(data));
             setData(data);
+            setReviewsToLocalStorage(data);
           } catch {
             setError(
               "We're sorry. Something went wrong on our end. Please try again later."
@@ -71,7 +75,9 @@ function App() {
             onChange={handleChange}
             variant="outlined"
             fullWidth
-          ></TextField>
+          >
+            <MenuItem key={1} value={""}></MenuItem>
+          </TextField>
         </Grid>
       </Grid>
     </div>
