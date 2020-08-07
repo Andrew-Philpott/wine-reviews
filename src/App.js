@@ -13,17 +13,7 @@ import {
   TableBody,
   Link,
 } from "@material-ui/core";
-
-// function getReviewsFromLocalStorage() {
-//   let reviews = localStorage.getItem("reviews");
-//   let parsedReviews = null;
-//   if (reviews) {
-//     parsedReviews = JSON.parse(reviews);
-//     return parsedReviews;
-//   } else {
-//     return null;
-//   }
-// }
+import { func } from "prop-types";
 
 function App() {
   const [data, setData] = React.useState(null);
@@ -40,43 +30,52 @@ function App() {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  // async function setReviewsToLocalStorage(reviews) {
-  //   for (let i = 0; i < reviews.length; i++) {
-  //     setData([...data, reviews[i]]);
-  //     const stringify = JSON.stringify(reviews[i]);
-  //     localStorage.setItem(`reviews${i}`, stringify);
-  //   }
-  // }
+  function setReviewsToLocalStorage(reviews) {
+    for (let i = 0; i < reviews.length; i++) {
+      setData([...data, reviews[i]]);
+      const stringify = JSON.stringify(reviews[i]);
+      localStorage.setItem(`reviews${i}`, stringify);
+    }
+  }
+
+  function setReviewsFromLocalStorage() {
+    let i = 0;
+    let reviewsFromStorage = localStorage.getItem(`reviews${i}`);
+    while (reviewsFromStorage !== null) {
+      const parsedReview = JSON.parse(reviewsFromStorage);
+      setData([data, parsedReview]);
+    }
+  }
 
   React.useEffect(() => {
     if (data === null) {
-      // const reviews = getReviewsFromLocalStorage();
-      // if (reviews === null) {
-      (async () => {
-        try {
-          const response = await fetch(
-            "https://lightninglaw.azurewebsites.net/api/reviews",
-            {
-              method: "GET",
-            }
-          );
-          const data = await response.json();
-          setData(data);
-          setCountries([...new Set(data.map((x) => x.country))]);
-          // setReviewsToLocalStorage(data);
-        } catch {
-          setError(
-            "We're sorry. Something went wrong on our end. Please try again later."
-          );
-        }
-      })();
-    } else {
-      setData(data);
+      if (localStorage.getItem("reviews0") === null) {
+        (async () => {
+          try {
+            const response = await fetch(
+              "https://lightninglaw.azurewebsites.net/api/reviews",
+              {
+                method: "GET",
+              }
+            );
+            const data = await response.json();
+            setData(data);
+            setCountries([...new Set(data.map((x) => x.country))]);
+            setReviewsToLocalStorage(data);
+          } catch {
+            setError(
+              "We're sorry. Something went wrong on our end. Please try again later."
+            );
+          }
+        })();
+      } else {
+        (async () => {
+          setReviewsFromLocalStorage();
+        })();
+      }
     }
-    // }
   }, []);
-  console.log(countries);
-  console.log(data);
+
   return (
     <div className="App">
       <Grid container>
