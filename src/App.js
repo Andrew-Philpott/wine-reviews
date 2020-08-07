@@ -11,12 +11,13 @@ import {
   TableCell,
   TableHead,
   TableBody,
-  Link,
 } from "@material-ui/core";
-import { func } from "prop-types";
+import setReviewsToLs from "./setReviewsToLS";
+import setReviewsFromLs from "./setReviewsFromLs";
+import usePagination from "./usePagination";
 
 function App() {
-  const [data, setData] = React.useState(null);
+  const [data, setData] = React.useState([]);
   const [inputs, setInputs] = useState({
     country: "",
     search: "",
@@ -24,31 +25,15 @@ function App() {
   });
   const [countries, setCountries] = React.useState([]);
   const [error, setError] = React.useState("");
+  let currentResults = usePagination(data, inputs.results);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  function setReviewsToLocalStorage(reviews) {
-    for (let i = 0; i < reviews.length; i++) {
-      setData([...data, reviews[i]]);
-      const stringify = JSON.stringify(reviews[i]);
-      localStorage.setItem(`reviews${i}`, stringify);
-    }
-  }
-
-  function setReviewsFromLocalStorage() {
-    let i = 0;
-    let reviewsFromStorage = localStorage.getItem(`reviews${i}`);
-    while (reviewsFromStorage !== null) {
-      const parsedReview = JSON.parse(reviewsFromStorage);
-      setData([data, parsedReview]);
-    }
-  }
-
   React.useEffect(() => {
-    if (data === null) {
+    if (data.length === 0) {
       if (localStorage.getItem("reviews0") === null) {
         (async () => {
           try {
@@ -61,7 +46,7 @@ function App() {
             const data = await response.json();
             setData(data);
             setCountries([...new Set(data.map((x) => x.country))]);
-            setReviewsToLocalStorage(data);
+            setReviewsToLs(data);
           } catch {
             setError(
               "We're sorry. Something went wrong on our end. Please try again later."
@@ -69,13 +54,13 @@ function App() {
           }
         })();
       } else {
-        (async () => {
-          setReviewsFromLocalStorage();
-        })();
+        setReviewsFromLs(setData, data);
+        setCountries([...new Set(data.map((x) => x.country))]);
       }
     }
-  }, []);
+  }, [data]);
 
+  console.log(data);
   return (
     <div className="App">
       <Grid container>
@@ -86,20 +71,20 @@ function App() {
           </Grid>
         </Grid>
         <Grid item xs={6}>
-          <h1>Countires of Origin</h1>
+          <h1>Countries of Origin</h1>
           {countries ? (
             <TextField
               select
-              name="countries"
+              name="country"
               value={inputs.country}
               onChange={handleChange}
               variant="outlined"
               fullWidth
             >
-              {Object.values(countries).map((x) => {
+              {Object.values(countries).map((x, index) => {
                 console.log(x);
                 return (
-                  <MenuItem key={1} value={x}>
+                  <MenuItem key={index} value={x}>
                     {x}
                   </MenuItem>
                 );
@@ -176,20 +161,48 @@ function App() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {data &&
+                {data.length !== 0 &&
+                  currentResults.currentData().map((result, index) => {
+                    if (result !== null) {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>
+                            {result.designation ? result.designation : null}
+                          </TableCell>
+                          <TableCell>
+                            {result.country ? result.country : null}
+                          </TableCell>
+                          <TableCell>
+                            {result.points ? result.points : null}
+                          </TableCell>
+                          <TableCell>
+                            {result.price ? result.price : null}
+                          </TableCell>
+                          <TableCell>
+                            {result.province ? result.province : null}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                  })}
+                {/* {data.length !== 0 &&
                   data.map((x, index) => {
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>{x.title}</TableCell>
-                        <TableCell>{x.variety}</TableCell>
-                        <TableCell>{x.winery}</TableCell>
-                        <TableCell>{x.points}</TableCell>
-                        <TableCell>{x.price}</TableCell>
-                        <TableCell>
-                          <Link> {x.description}</Link>
-                        </TableCell>
-                      </TableRow>
-                    );
+                    console.log(x);
+                    if (x !== null) {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>
+                            {x.designation ? x.designation : null}
+                          </TableCell>
+                          <TableCell>{x.country ? x.country : null}</TableCell>
+                          <TableCell>{x.points ? x.points : null}</TableCell>
+                          <TableCell>{x.price ? x.price : null}</TableCell>
+                          <TableCell>
+                            {x.province ? x.province : null}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
                   })} */}
               </TableBody>
             </Table>
