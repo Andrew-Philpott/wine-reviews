@@ -24,7 +24,6 @@ function App() {
     results: 10,
     queryString: "",
   });
-  const [countries, setCountries] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const [error, setError] = React.useState("");
   let currentResults = usePagination(data, inputs.results);
@@ -62,7 +61,6 @@ function App() {
             );
             const data = await response.json();
             setData(data);
-            setCountries([...new Set(data.map((x) => x.country))]);
             setReviewsToLs(data);
           } catch {
             setError(
@@ -72,7 +70,6 @@ function App() {
         })();
       } else {
         setReviewsFromLs(setData, data);
-        setCountries([...new Set(data.map((x) => x.country))]);
       }
     }
   }, [data]);
@@ -89,7 +86,7 @@ function App() {
         </Grid>
         <Grid item xs={6}>
           <h1>Countries of Origin</h1>
-          {countries ? (
+          {data ? (
             <TextField
               select
               name="country"
@@ -98,14 +95,15 @@ function App() {
               variant="outlined"
               fullWidth
             >
-              {Object.values(countries).map((x, index) => {
-                console.log(x);
-                return (
-                  <MenuItem key={index} value={x}>
-                    {x}
-                  </MenuItem>
-                );
-              })}
+              {Object.values([...new Set(data.map((x) => x.country))]).map(
+                (x, index) => {
+                  return (
+                    <MenuItem key={index} value={x}>
+                      {x}
+                    </MenuItem>
+                  );
+                }
+              )}
             </TextField>
           ) : (
             <TextField
