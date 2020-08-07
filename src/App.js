@@ -11,23 +11,26 @@ import {
   TableCell,
   TableHead,
   TableBody,
+  Link,
 } from "@material-ui/core";
 
-function getReviewsFromLocalStorage() {
-  let reviews = localStorage.getItem("reviews");
-  let parsedReviews = null;
-  if (reviews) {
-    parsedReviews = JSON.parse(reviews);
-    return parsedReviews;
-  } else {
-    return null;
-  }
-}
+// function getReviewsFromLocalStorage() {
+//   let reviews = localStorage.getItem("reviews");
+//   let parsedReviews = null;
+//   if (reviews) {
+//     parsedReviews = JSON.parse(reviews);
+//     return parsedReviews;
+//   } else {
+//     return null;
+//   }
+// }
 
 function App() {
   const [data, setData] = React.useState(null);
   const [inputs, setInputs] = useState({
     country: "",
+    search: "",
+    results: 10,
   });
   const [countries, setCountries] = React.useState([]);
   const [error, setError] = React.useState("");
@@ -37,43 +40,43 @@ function App() {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  async function setReviewsToLocalStorage(reviews) {
-    for (let i = 0; i < reviews.length; i++) {
-      setData([...data, reviews[i]]);
-      const stringify = JSON.stringify(reviews[i]);
-      localStorage.setItem(`reviews${i}`, stringify);
-    }
-  }
+  // async function setReviewsToLocalStorage(reviews) {
+  //   for (let i = 0; i < reviews.length; i++) {
+  //     setData([...data, reviews[i]]);
+  //     const stringify = JSON.stringify(reviews[i]);
+  //     localStorage.setItem(`reviews${i}`, stringify);
+  //   }
+  // }
 
   React.useEffect(() => {
     if (data === null) {
-      const reviews = getReviewsFromLocalStorage();
-      if (reviews === null) {
-        (async () => {
-          try {
-            const response = await fetch(
-              "https://lightninglaw.azurewebsites.net/api/reviews",
-              {
-                method: "GET",
-              }
-            );
-            const data = await response.json();
-            setData(data);
-            setCountries([...new Set(data.map((x) => x.country))]);
-            setReviewsToLocalStorage(data);
-          } catch {
-            setError(
-              "We're sorry. Something went wrong on our end. Please try again later."
-            );
-          }
-        })();
-      } else {
-        setData(reviews);
-      }
+      // const reviews = getReviewsFromLocalStorage();
+      // if (reviews === null) {
+      (async () => {
+        try {
+          const response = await fetch(
+            "https://lightninglaw.azurewebsites.net/api/reviews",
+            {
+              method: "GET",
+            }
+          );
+          const data = await response.json();
+          setData(data);
+          setCountries([...new Set(data.map((x) => x.country))]);
+          // setReviewsToLocalStorage(data);
+        } catch {
+          setError(
+            "We're sorry. Something went wrong on our end. Please try again later."
+          );
+        }
+      })();
+    } else {
+      setData(data);
     }
+    // }
   }, []);
   console.log(countries);
-  console.log(localStorage.getItem(""));
+  console.log(data);
   return (
     <div className="App">
       <Grid container>
@@ -140,8 +143,8 @@ function App() {
                 <TextField
                   style={{ float: "right" }}
                   select
-                  name="countries"
-                  value={inputs.country}
+                  name="results"
+                  value={inputs.results}
                   onChange={handleChange}
                   variant="outlined"
                   fullWidth
@@ -174,7 +177,7 @@ function App() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data &&
+                {/* {data &&
                   data.map((x, index) => {
                     return (
                       <TableRow key={index}>
@@ -183,10 +186,12 @@ function App() {
                         <TableCell>{x.winery}</TableCell>
                         <TableCell>{x.points}</TableCell>
                         <TableCell>{x.price}</TableCell>
-                        <TableCell>{x.description}</TableCell>
+                        <TableCell>
+                          <Link> {x.description}</Link>
+                        </TableCell>
                       </TableRow>
                     );
-                  })}
+                  })} */}
               </TableBody>
             </Table>
           </TableContainer>
