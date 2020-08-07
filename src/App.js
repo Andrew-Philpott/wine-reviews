@@ -1,8 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
 
 function App() {
+  const [data, setData] = React.useState([]);
+
+  React.useEffect(() => {
+    if (data.length === 0) {
+      (async () => {
+        const response = await fetch(
+          "https://lightninglaw.azurewebsites.net/api/reviews",
+          {
+            method: "GET",
+          }
+        );
+        const data = await response.json();
+        setData(data);
+      })();
+    }
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
