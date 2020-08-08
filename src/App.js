@@ -75,7 +75,11 @@ function App() {
     }
   }, []);
 
-  let currentResults = usePagination(results, inputs.results);
+  const { next, prev, jump, currentData, currentPage, maxPage } = usePagination(
+    results,
+    inputs.results
+  );
+
   return (
     <div className="App">
       <Grid container>
@@ -215,7 +219,7 @@ function App() {
                   </TableHead>
                   <TableBody>
                     {results.length !== 0 &&
-                      currentResults.currentData().map((result, index) => {
+                      currentData().map((result, index) => {
                         if (result !== null) {
                           return (
                             <TableRow key={index}>
@@ -244,84 +248,61 @@ function App() {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div>
-                <Button onClick={() => currentResults.prev()}>{"<<"}</Button>
+              <Grid className="pagination">
+                <Button
+                  style={{ minWidth: "0px", marginRight: "5px" }}
+                  onClick={() => prev()}
+                >
+                  {"<<"}
+                </Button>
                 <React.Fragment>
-                  {currentResults.currentPage === 1 ? (
+                  {currentPage === 1 ? (
                     <React.Fragment>
-                      <span>
-                        <u>{currentResults.currentPage}</u>
-                      </span>
-                      {currentResults.currentPage + 1 <=
-                        currentResults.maxPage && (
+                      <span>{currentPage}</span>
+                      {currentPage + 1 <= maxPage && (
                         <React.Fragment>
                           <span>{" | "}</span>
-                          <button
-                            onClick={() =>
-                              currentResults.jump(
-                                currentResults.currentPage + 1
-                              )
-                            }
-                          >
-                            {currentResults.currentPage + 1}
-                          </button>
+                          <Button onClick={() => jump(currentPage + 1)}>
+                            <span>{currentPage + 1}</span>
+                          </Button>
                         </React.Fragment>
                       )}
-                      {currentResults.currentPage + 2 <=
-                        currentResults.maxPage && (
+                      {currentPage + 2 <= maxPage && (
                         <React.Fragment>
                           <span>{" | "}</span>
-                          <button
-                            onClick={() =>
-                              currentResults.jump(
-                                currentResults.currentPage + 2
-                              )
-                            }
-                          >
-                            {currentResults.currentPage + 2}
-                          </button>
+                          <Button onClick={() => jump(currentPage + 2)}>
+                            <span>{currentPage + 2}</span>
+                          </Button>
                         </React.Fragment>
                       )}
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
-                      {currentResults.currentPage - 1 >= 1 && (
-                        <button
-                          className="pagination-button"
-                          onClick={() =>
-                            currentResults.jump(currentResults.currentPage - 1)
-                          }
-                        >
-                          {currentResults.currentPage - 1}
-                        </button>
+                      {currentPage - 1 >= 1 && (
+                        <Button onClick={() => jump(currentPage - 1)}>
+                          <span>{currentPage - 1}</span>
+                        </Button>
                       )}
-                      <React.Fragment>
-                        <span>
-                          {" | "}
-                          <u>{currentResults.currentPage}</u>
-                        </span>
-                      </React.Fragment>
-                      {currentResults.currentPage + 1 <=
-                        currentResults.maxPage && (
+                      <span>{" | "}</span>
+                      <span>{currentPage}</span>
+                      {currentPage + 1 <= maxPage && (
                         <React.Fragment>
                           <span>{" | "}</span>
-                          <button
-                            onClick={() =>
-                              currentResults.jump(
-                                currentResults.currentPage + 1
-                              )
-                            }
-                          >
-                            {currentResults.currentPage + 1}
-                          </button>{" "}
+                          <Button onClick={() => jump(currentPage + 1)}>
+                            <span>{currentPage + 1}</span>
+                          </Button>
                         </React.Fragment>
                       )}
                     </React.Fragment>
                   )}
                 </React.Fragment>
-
-                <Button onClick={() => currentResults.next()}>{">>"}</Button>
-              </div>
+                <Button
+                  style={{ minWidth: "0px", marginLeft: "5px" }}
+                  onClick={() => next()}
+                >
+                  {">>"}
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
