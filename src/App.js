@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./App.css";
 import {
   Grid,
@@ -10,7 +10,6 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  Container,
   TableBody,
 } from "@material-ui/core";
 import setReviewsToLs from "./setReviewsToLS";
@@ -19,39 +18,35 @@ import usePagination from "./usePagination";
 
 function App() {
   const [data, setData] = React.useState([]);
-  const [inputs, setInputs] = useState({
+  const [results, setResults] = React.useState([]);
+  const [error, setError] = React.useState("");
+  const [inputs, setInputs] = React.useState({
     country: "",
     search: "",
     results: 10,
-    search: "",
   });
-  const [results, setResults] = React.useState([]);
-  const [error, setError] = React.useState("");
 
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  const searchReviews = (queryString) => {
+  function searchReviews(queryString) {
     if (queryString === "") {
       setResults([...data]);
     } else {
       let newState = [...data];
+      let queryTypes = ["variety", "title", "winery", "tasterName"];
       let filteredReviews = [];
-
-      while (filteredReviews.length === 0) {
-        filteredReviews = newState.filter((x) => x.variety === queryString);
-        filteredReviews = newState.filter((x) => x.title === queryString);
-        filteredReviews = newState.filter((x) => x.winery === queryString);
-        filteredReviews = newState.filter((x) => x.tasterName === queryString);
-        break;
-      }
-      setResults(filteredReviews);
+      queryTypes.forEach((element) => {
+        filteredReviews = newState.filter((x) => x[element] === queryString);
+        if (filteredReviews.length !== 0) {
+          setResults(filteredReviews);
+          return;
+        }
+      });
     }
-
-    return;
-  };
+  }
 
   React.useEffect(() => {
     if (data.length === 0) {
@@ -75,17 +70,18 @@ function App() {
           }
         })();
       } else {
-        setReviewsFromLs(setData, data);
+        setReviewsFromLs(setData, setResults, data);
       }
     }
-  }, [data]);
-  let currentResults = usePagination(data, inputs.results);
-  console.log(data);
+  }, []);
+
+  let currentResults = usePagination(results, inputs.results);
   return (
     <div className="App">
       <Grid container>
         <Grid item xs={1} />
         <Grid item xs={10}>
+          {error && <h1>{error}</h1>}
           <Grid container>
             <Grid item xs={1} />
             <Grid item xs={4}>
@@ -218,7 +214,7 @@ function App() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data.length !== 0 &&
+                    {results.length !== 0 &&
                       currentResults.currentData().map((result, index) => {
                         if (result !== null) {
                           return (
