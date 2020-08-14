@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("./client/build/"));
-app.use("/api/thoughts/", require("./server/routes/reviews"));
+app.use("/api/", require("./server/routes/reviews"));
 app.get("/*", (req, res) => {
   res.sendfile("index.html", { root: __dirname + "/client/build/" })
 });

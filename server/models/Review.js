@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const ReviewSchema = mongoose.Schema({
+  country: String,
   title: String,
   variety: String,
   winery: String,
