@@ -9,16 +9,15 @@ router.get("/reviews", (req, res, next) => {
 });
 
 router.post("/reviews", (req, res, next) => {
-  console.log(req);
-  console.log(req.body);
-  const { title, variety, winery, points, price, taster } = req.body;
+  const { title, variety, winery, rating, price, taster, country } = req.body;
   const newReview = new Review({
     title: title,
     variety: variety,
     winery: winery,
-    points: points,
+    rating: rating,
     price: price,
     taster: taster,
+    country: country,
   });
   newReview.save((err) => {
     if (err) next(err);
@@ -32,9 +31,10 @@ router.post("/seed", async (req, res, next) => {
       title: "test",
       variety: "test",
       winery: "test",
-      points: x,
+      rating: x,
       price: x,
       taster: "test",
+      country: "test",
     });
     await newReview.save();
   }
@@ -45,16 +45,17 @@ router.post("/seed", async (req, res, next) => {
 
 router.put("/reviews", (req, res, next) => {
   const { id } = req.params;
-  const { title, variety, winery, points, price, taster } = req.body;
+  const { title, variety, winery, rating, price, taster } = req.body;
   Review.findOne({ id })
     .then((review) => {
       (review.title = title),
         (review.variety = variety),
         (review.winery = winery),
-        (review.points = points),
+        (review.rating = rating),
         (review.price = price),
         (review.taster = taster),
-        review.save().then(res.json(review));
+        (review.country = country);
+      review.save().then(res.json(review));
     })
     .catch((err) => {
       res.status(500).send(err);

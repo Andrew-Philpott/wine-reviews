@@ -5,9 +5,10 @@ const ReviewSchema = mongoose.Schema({
   title: String,
   variety: String,
   winery: String,
-  points: Number,
+  rating: Number,
   price: Number,
   taster: String,
+  country: String,
 });
 
 const Review = mongoose.model("Review", ReviewSchema);

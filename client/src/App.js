@@ -38,7 +38,7 @@ function App() {
       return Object.values(temp).every((x) => x === "");
   };
 
-  const { values, setValues, errors, setErrors, handleInputChange } = useForm(
+  const { values, errors, setErrors, handleInputChange } = useForm(
     {
       title: "",
       variety: "",
@@ -58,7 +58,7 @@ function App() {
 
   function searchReviews(queryString) {
     if (queryString === "") {
-      setResults([...data]);
+      return [];
     } else {
       let newState = [...data];
       let queryTypes = ["variety", "title", "winery", "tasterName"];
@@ -66,7 +66,7 @@ function App() {
       queryTypes.forEach((element) => {
         filteredReviews = newState.filter((x) => x[element] === queryString);
         if (filteredReviews.length !== 0) {
-          setResults(filteredReviews);
+          return filteredReviews;
         }
       });
     }
@@ -74,54 +74,51 @@ function App() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      const jsonResponse = await response.json();
-      setData([...data, jsonResponse]);
-    } catch {
-      setError(
-        "Something went wrong on our end trying to add a review. Please try again later."
+    await fetch("/api/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+      .then((res) => res.json())
+      .then((jres) => {
+        console.log(jres);
+        setData([...data, jres]);
+      })
+      .catch(() =>
+        setError(
+          "Something went wrong on our end trying to add a review. Please try again later."
+        )
       );
-    }
   }
 
   React.useEffect(() => {
     if (data.length === 0) {
-      if (localStorage.getItem("reviews0") === null) {
-        (async () => {
-          try {
-            const response = await fetch("/api/reviews", {
-              method: "GET",
-            });
-            const data = await response.json();
-            setData(data);
-            setResults(data);
-            setReviewsToLs(data);
-          } catch {
-            setError(
-              "We're sorry. Something went wrong on our end. Please try again later."
-            );
-          }
-        })();
-      } else {
-        setReviewsFromLs(setData, setResults, data);
-      }
+      (async () => {
+        try {
+          const response = await fetch("/api/reviews", {
+            method: "GET",
+          });
+          const data = await response.json();
+          setData(data);
+          setReviewsToLs(data);
+        } catch {
+          setError(
+            "We're sorry. Something went wrong on our end. Please try again later."
+          );
+        }
+      })();
     }
   }, [data]);
 
   return (
     <div className="App">
       <Grid container>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <h1 id="header">Wine reviews</h1>
         </Grid>
-        <Grid item xs={9} />
+        <Grid item xs={8} />
         <Grid item xs={1} sm={3} md={3} lg={4} xl={4} />
         <Grid
           className="card"
@@ -143,7 +140,6 @@ function App() {
                   searchReviews={searchReviews}
                   handleFilterChange={handleFilterChange}
                   data={data}
-                  results={results}
                   filters={filters}
                 />
               </Route>

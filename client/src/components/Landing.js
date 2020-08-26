@@ -14,9 +14,9 @@ import Pagination from "./Pagination";
 import SearchIcon from "@material-ui/icons/Search";
 
 export default ({ ...props }) => {
-  const { searchReviews, handleFilterChange, data, results, filters } = props;
+  const { searchReviews, handleFilterChange, data, filters } = props;
   const { next, prev, jump, currentData, currentPage, maxPage } = usePagination(
-    results,
+    data,
     filters.results
   );
 
@@ -129,6 +129,9 @@ export default ({ ...props }) => {
                     onChange={handleFilterChange}
                     variant="outlined"
                   >
+                    <MenuItem key={5} value={5}>
+                      5
+                    </MenuItem>
                     <MenuItem key={10} value={10}>
                       10
                     </MenuItem>
@@ -146,7 +149,7 @@ export default ({ ...props }) => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <ReviewsList results={results} currentData={currentData} />
+          <ReviewsList data={data} currentData={currentData} />
           <Pagination
             currentPage={currentPage}
             maxPage={maxPage}

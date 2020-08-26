@@ -8,5 +8,4 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("Succesfully connected."))
   .catch(console.error);
