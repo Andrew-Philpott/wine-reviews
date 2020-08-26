@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 function usePagination(data, itemsPerPage) {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [maxPage, setMaxPage] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setMaxPage(Math.ceil(data.length / itemsPerPage));
   }, [data]);
 
