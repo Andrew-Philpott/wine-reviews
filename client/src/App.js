@@ -4,31 +4,40 @@ import {
   Grid,
   TextField,
   MenuItem,
+  Paper,
   Button,
-  TableContainer,
-  Table,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody,
+  IconButton,
 } from "@material-ui/core";
 import setReviewsToLs from "./setReviewsToLS";
 import setReviewsFromLs from "./setReviewsFromLs";
 import usePagination from "./usePagination";
+import ReviewForm from "./ReviewForm";
+import ReviewsList from "./ReviewsList";
+import Pagination from "./Pagination";
+import SearchIcon from "@material-ui/icons/Search";
+import useForm from "./useForm";
 
 function App() {
   const [data, setData] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const [error, setError] = React.useState("");
-  const [inputs, setInputs] = React.useState({
+  const [filters, setFilters] = React.useState({
     country: "",
     search: "",
     results: 10,
   });
+  const { values, setValues, errors, setErrors, handleInputChange } = useForm({
+    title: "",
+    variety: "",
+    winery: "",
+    points: "",
+    price: "",
+    taster: "",
+  });
 
-  function handleChange(e) {
+  function handleFilterChange(e) {
     const { name, value } = e.target;
-    setInputs((inputs) => ({ ...inputs, [name]: value }));
+    setFilters((filters) => ({ ...filters, [name]: value }));
   }
 
   function searchReviews(queryString) {
@@ -42,65 +51,98 @@ function App() {
         filteredReviews = newState.filter((x) => x[element] === queryString);
         if (filteredReviews.length !== 0) {
           setResults(filteredReviews);
-          return;
         }
       });
     }
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const jsonResponse = await response.json();
+      setData([...data, jsonResponse]);
+    } catch {
+      setError(
+        "Something went wrong on our end trying to add a review. Please try again later."
+      );
+    }
+  }
+
   React.useEffect(() => {
     if (data.length === 0) {
-      if (localStorage.getItem("reviews0") === null) {
-        (async () => {
-          try {
-            const response = await fetch(
-              "https://lightninglaw.azurewebsites.net/api/reviews",
-              {
-                method: "GET",
-              }
-            );
-            const data = await response.json();
-            setData(data);
-            setResults(data);
-            setReviewsToLs(data);
-          } catch {
-            setError(
-              "We're sorry. Something went wrong on our end. Please try again later."
-            );
-          }
-        })();
-      } else {
-        setReviewsFromLs(setData, setResults, data);
-      }
+      // if (localStorage.getItem("reviews0") === null) {
+      (async () => {
+        try {
+          const response = await fetch("/api/reviews", {
+            method: "GET",
+          });
+          const data = await response.json();
+          setData(data);
+          setResults(data);
+          setReviewsToLs(data);
+        } catch {
+          setError(
+            "We're sorry. Something went wrong on our end. Please try again later."
+          );
+        }
+      })();
     }
-  }, []);
+
+    // else {
+    //   setReviewsFromLs(setData, setResults, data);
+    // }
+    // }
+  }, [data]);
 
   const { next, prev, jump, currentData, currentPage, maxPage } = usePagination(
     results,
-    inputs.results
+    filters.results
   );
 
   return (
     <div className="App">
       <Grid container>
-        <Grid item xs={1} />
-        <Grid item xs={10}>
-          {error && <h1>{error}</h1>}
+        <Grid item xs={3}>
+          <h1 id="header">Wine reviews</h1>
+        </Grid>
+        <Grid item xs={9} />
+        <Grid item xs={1} sm={3} md={3} lg={4} xl={4} />
+        <Grid
+          className="card"
+          component={Paper}
+          item
+          xs={10}
+          sm={6}
+          md={6}
+          lg={4}
+          xl={4}
+        >
+          <Button className="float-right">Create Review</Button>
           <Grid container>
+            <Grid item xs={12}>
+              {error && <h1>{error}</h1>}
+            </Grid>
             <Grid item xs={1} />
             <Grid item xs={4}>
-              <h1>TOTAL NUMBER OF REVIEWS</h1>
+              <h2>TOTAL NUMBER OF REVIEWS</h2>
               <Grid
                 container
                 alignItems="center"
                 justify="center"
-                style={{ height: "200px", border: "2px solid black" }}
+                className="review-count"
               >
-                <span style={{ fontSize: "12vw" }}>
-                  {data && inputs.country === ""
+                <span>
+                  {data && filters.country === ""
                     ? ""
                     : data &&
-                      data.filter((x) => x.country === inputs.country).length}
+                      data.filter((x) => x.country === filters.country).length}
                 </span>
               </Grid>
               <Grid item xs={1} />
@@ -109,13 +151,13 @@ function App() {
               <Grid container>
                 <Grid item xs={3} />
                 <Grid item xs={8}>
-                  <h1>Countries of Origin</h1>
+                  <h2>Countries of Origin</h2>
                   {data ? (
                     <TextField
                       select
                       name="country"
-                      value={inputs.country}
-                      onChange={handleChange}
+                      value={filters.country}
+                      onChange={handleFilterChange}
                       variant="outlined"
                       fullWidth
                     >
@@ -133,8 +175,8 @@ function App() {
                     <TextField
                       select
                       name="countries"
-                      value={inputs.country}
-                      onChange={handleChange}
+                      value={filters.country}
+                      onChange={handleFilterChange}
                       variant="outlined"
                       fullWidth
                     >
@@ -147,45 +189,51 @@ function App() {
                 <Grid item xs={1} />
               </Grid>
             </Grid>
-            <Grid style={{ marginTop: "80px" }} container>
-              <Grid item xs={1} />
-              <Grid item xs={10}>
+            <Grid item xs={1} />
+            <Grid spacing={1} style={{ marginTop: "80px" }} container>
+              <Grid item xs={12}>
                 <Grid container>
-                  <Grid item xs={9}>
+                  <Grid item sm={1} md={1} lg={1} xl={1} />
+                  <Grid item xs={7} sm={6} md={6} lg={6} xl={6}>
                     <Grid alignItems="center" container>
-                      <span style={{ marginRight: "10px" }}>Filters:</span>
+                      <span style={{ marginRight: "2px", float: "left" }}>
+                        Filters:
+                      </span>
                       <TextField
                         type="text"
                         name="search"
-                        style={{ width: "60%", marginRight: "10px" }}
+                        className="search-box"
                         placeholder="Search term"
-                        value={inputs.search}
-                        onChange={handleChange}
+                        value={filters.search}
+                        onChange={handleFilterChange}
                         variant="outlined"
                       />
 
-                      <Button
-                        variant="outlined"
-                        onClick={() => searchReviews(inputs.search)}
+                      <IconButton
+                        style={{
+                          borderRadius: "0px",
+                          paddingLeft: "4px",
+                          paddingRight: "4px",
+                          paddingTop: "16px",
+                          paddingBottom: "16px",
+                        }}
+                        onClick={() => searchReviews(filters.search)}
                       >
-                        SEARCH
-                      </Button>
+                        <SearchIcon />
+                      </IconButton>
                     </Grid>
                   </Grid>
-                  <Grid item xs={3}>
-                    <div
-                      style={{
-                        float: "right",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span style={{ marginRight: "5px" }}>Results:</span>
+                  <Grid item xs={5} sm={4} md={4} lg={4} xl={4}>
+                    <Grid alignItems="center" justify="flex-end" container>
+                      <span style={{ marginRight: "2px", float: "left" }}>
+                        Results:
+                      </span>
                       <TextField
                         select
                         name="results"
-                        value={inputs.results}
-                        onChange={handleChange}
+                        className="results-filter"
+                        value={filters.results}
+                        onChange={handleFilterChange}
                         variant="outlined"
                       >
                         <MenuItem key={10} value={10}>
@@ -198,115 +246,31 @@ function App() {
                           30
                         </MenuItem>
                       </TextField>
-                    </div>
+                    </Grid>
                   </Grid>
+                  <Grid item sm={1} md={1} lg={1} xl={1} />
                 </Grid>
               </Grid>
-              <Grid item xs={1} />
             </Grid>
             <Grid item xs={12}>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Title</TableCell>
-                      <TableCell>Variety</TableCell>
-                      <TableCell>Winery</TableCell>
-                      <TableCell>Points</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Taster</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {results.length !== 0 &&
-                      currentData().map((result, index) => {
-                        if (result !== null) {
-                          return (
-                            <TableRow key={index}>
-                              <TableCell>
-                                {result.title && result.title}
-                              </TableCell>
-                              <TableCell>
-                                {result.variety && result.variety}
-                              </TableCell>
-                              <TableCell>
-                                {result.winery && result.winery}
-                              </TableCell>
-                              <TableCell>
-                                {result.points && result.points}
-                              </TableCell>
-                              <TableCell>
-                                {result.price && result.price}
-                              </TableCell>
-                              <TableCell>
-                                {result.tasterName && result.tasterName}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        }
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Grid className="pagination">
-                <Button
-                  style={{ minWidth: "0px", marginRight: "5px" }}
-                  onClick={() => prev()}
-                >
-                  {"<<"}
-                </Button>
-                <React.Fragment>
-                  {currentPage === 1 ? (
-                    <React.Fragment>
-                      <span>{currentPage}</span>
-                      {currentPage + 1 <= maxPage && (
-                        <React.Fragment>
-                          <span>{" | "}</span>
-                          <Button onClick={() => jump(currentPage + 1)}>
-                            <span>{currentPage + 1}</span>
-                          </Button>
-                        </React.Fragment>
-                      )}
-                      {currentPage + 2 <= maxPage && (
-                        <React.Fragment>
-                          <span>{" | "}</span>
-                          <Button onClick={() => jump(currentPage + 2)}>
-                            <span>{currentPage + 2}</span>
-                          </Button>
-                        </React.Fragment>
-                      )}
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      {currentPage - 1 >= 1 && (
-                        <Button onClick={() => jump(currentPage - 1)}>
-                          <span>{currentPage - 1}</span>
-                        </Button>
-                      )}
-                      <span>{" | "}</span>
-                      <span>{currentPage}</span>
-                      {currentPage + 1 <= maxPage && (
-                        <React.Fragment>
-                          <span>{" | "}</span>
-                          <Button onClick={() => jump(currentPage + 1)}>
-                            <span>{currentPage + 1}</span>
-                          </Button>
-                        </React.Fragment>
-                      )}
-                    </React.Fragment>
-                  )}
-                </React.Fragment>
-                <Button
-                  style={{ minWidth: "0px", marginLeft: "5px" }}
-                  onClick={() => next()}
-                >
-                  {">>"}
-                </Button>
-              </Grid>
+              <ReviewsList results={results} currentData={currentData} />
+              <Pagination
+                currentPage={currentPage}
+                maxPage={maxPage}
+                prev={prev}
+                jump={jump}
+                next={next}
+              />
             </Grid>
           </Grid>
+          <ReviewForm
+            values={values}
+            errors={errors}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+          />
         </Grid>
-        <Grid item xs={1} />
+        <Grid item xs={1} sm={3} md={3} lg={4} xl={4} />
       </Grid>
     </div>
   );
