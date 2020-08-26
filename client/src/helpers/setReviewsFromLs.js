@@ -1,4 +1,4 @@
-function setReviewsFromLs(setData, setResults, data) {
+export default (setData, setResults, data) => {
   let i = 0;
   let newState = [...data];
   while (localStorage.getItem(`reviews${i}`) !== null) {
@@ -8,5 +8,4 @@ function setReviewsFromLs(setData, setResults, data) {
     setResults(newState);
     i++;
   }
-}
-export default setReviewsFromLs;
+};

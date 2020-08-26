@@ -22,7 +22,7 @@ export default ({ ...props }) => {
 
   return (
     <React.Fragment>
-      <Button component={Link} to="/new" className="float-right">
+      <Button component={Link} to="/new" className="float-right blk-border-1">
         Create Review
       </Button>
       <Grid container>
@@ -87,15 +87,13 @@ export default ({ ...props }) => {
           </Grid>
         </Grid>
         <Grid item xs={1} />
-        <Grid spacing={1} style={{ marginTop: "80px" }} container>
+        <Grid spacing={1} className="filters" container>
           <Grid item xs={12}>
             <Grid container>
               <Grid item sm={1} md={1} lg={1} xl={1} />
               <Grid item xs={7} sm={6} md={6} lg={6} xl={6}>
                 <Grid alignItems="center" container>
-                  <span style={{ marginRight: "2px", float: "left" }}>
-                    Filters:
-                  </span>
+                  <span>Filters:</span>
                   <TextField
                     type="text"
                     name="search"
@@ -122,9 +120,7 @@ export default ({ ...props }) => {
               </Grid>
               <Grid item xs={5} sm={4} md={4} lg={4} xl={4}>
                 <Grid alignItems="center" justify="flex-end" container>
-                  <span style={{ marginRight: "2px", float: "left" }}>
-                    Results:
-                  </span>
+                  <span>Results:</span>
                   <TextField
                     select
                     name="results"

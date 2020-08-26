@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import "./App.css";
 import { Grid, Paper } from "@material-ui/core";
-import setReviewsToLs from "./helpers/setReviewsToLS";
+import setReviewsToLs from "./helpers/setReviewsToLs";
+import setReviewsFromLs from "./helpers/setReviewsFromLs";
 import ReviewForm from "./components/ReviewForm";
 import useForm from "./components/hooks/useForm";
 import Landing from "./components/Landing";
@@ -16,14 +17,39 @@ function App() {
     search: "",
     results: 10,
   });
-  const { values, setValues, errors, setErrors, handleInputChange } = useForm({
-    title: "",
-    variety: "",
-    winery: "",
-    points: "",
-    price: "",
-    taster: "",
-  });
+
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
+    if ("title" in fieldValues) temp.title = fieldValues.title ? true : false;
+    if ("variety" in fieldValues)
+      temp.variety = fieldValues.variety ? true : false;
+    if ("winery" in fieldValues)
+      temp.winery = fieldValues.winery ? true : false;
+    if ("rating" in fieldValues)
+      temp.rating = fieldValues.rating ? true : false;
+    if ("price" in fieldValues) temp.price = fieldValues.price ? true : false;
+    if ("taster" in fieldValues)
+      temp.taster = fieldValues.taster ? true : false;
+    if ("country" in fieldValues)
+      temp.country = fieldValues.country ? true : false;
+
+    setErrors({ ...temp });
+    if (fieldValues === values)
+      return Object.values(temp).every((x) => x === "");
+  };
+
+  const { values, setValues, errors, setErrors, handleInputChange } = useForm(
+    {
+      title: "",
+      variety: "",
+      winery: "",
+      rating: "",
+      price: "",
+      taster: "",
+      country: "",
+    },
+    validate
+  );
 
   function handleFilterChange(e) {
     const { name, value } = e.target;
@@ -67,28 +93,26 @@ function App() {
 
   React.useEffect(() => {
     if (data.length === 0) {
-      // if (localStorage.getItem("reviews0") === null) {
-      (async () => {
-        try {
-          const response = await fetch("/api/reviews", {
-            method: "GET",
-          });
-          const data = await response.json();
-          setData(data);
-          setResults(data);
-          setReviewsToLs(data);
-        } catch {
-          setError(
-            "We're sorry. Something went wrong on our end. Please try again later."
-          );
-        }
-      })();
+      if (localStorage.getItem("reviews0") === null) {
+        (async () => {
+          try {
+            const response = await fetch("/api/reviews", {
+              method: "GET",
+            });
+            const data = await response.json();
+            setData(data);
+            setResults(data);
+            setReviewsToLs(data);
+          } catch {
+            setError(
+              "We're sorry. Something went wrong on our end. Please try again later."
+            );
+          }
+        })();
+      } else {
+        setReviewsFromLs(setData, setResults, data);
+      }
     }
-
-    // else {
-    //   setReviewsFromLs(setData, setResults, data);
-    // }
-    // }
   }, [data]);
 
   return (

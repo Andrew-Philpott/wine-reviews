@@ -13,11 +13,7 @@ body,
   height: 100%;
   width: 100%;
 }
-#header {
-  color: purple;
-  font-size: 3vh;
-  font-style: italic;
-}
+
 @media screen and (min-width: 280px) {
   .search-box {
     min-width: 50px !important;
@@ -63,8 +59,14 @@ body,
     width: 60% !important;
   }
 }
+.blk-border-1 {
+  border: 1px solid black !important;
+}
 .card {
   padding: 24px;
+}
+.errors {
+  color: red;
 }
 .float-left {
   float: left;
@@ -72,12 +74,30 @@ body,
 .float-right {
   float: right;
 }
+.filters {
+  margin-top: 80px !important;
+}
+.filters span {
+  margin-right: 2px;
+}
 img {
   opacity: 0.5;
 }
 .header-spacer {
   height: 24px;
   width: 100%;
+}
+#header {
+  color: purple;
+  font-size: 3vh;
+  font-style: italic;
+}
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
 }
 .pagination {
   margin-top: 16px;
@@ -104,4 +124,15 @@ img {
 }
 .review-count:first-of-type span {
   font-size: 12vw;
+}
+.review-form:first-of-type h1 {
+  font-size: 3vh;
+  float: left;
+}
+.review-form > * {
+  margin-top: 8px !important;
+}
+.review-form .MuiButtonBase-root {
+  float: right;
+  margin: 0 5px;
 }
