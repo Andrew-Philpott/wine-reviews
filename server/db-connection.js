@@ -1,10 +1,7 @@
 const mongoose = require("mongoose");
-
-const { DB_CONN, DB_USER, DB_PW } = process.env;
-
+const db = "mongodb://127.0.0.1:27017/mydb";
 mongoose
-  .connect(DB_CONN, {
-    auth: { user: DB_USER, password: DB_PW },
+  .connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

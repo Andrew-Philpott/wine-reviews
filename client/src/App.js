@@ -1,16 +1,13 @@
 import React from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import "./App.css";
 import { Grid, Paper } from "@material-ui/core";
-import setReviewsToLs from "./helpers/setReviewsToLs";
-import setReviewsFromLs from "./helpers/setReviewsFromLs";
 import ReviewForm from "./components/ReviewForm";
 import useForm from "./components/hooks/useForm";
 import Landing from "./components/Landing";
+import "./App.css";
 
 function App() {
   const [data, setData] = React.useState([]);
-  const [results, setResults] = React.useState([]);
   const [error, setError] = React.useState("");
   const [filters, setFilters] = React.useState({
     country: "",
@@ -83,7 +80,6 @@ function App() {
     })
       .then((res) => res.json())
       .then((jres) => {
-        console.log(jres);
         setData([...data, jres]);
       })
       .catch(() =>
@@ -102,7 +98,6 @@ function App() {
           });
           const data = await response.json();
           setData(data);
-          setReviewsToLs(data);
         } catch {
           setError(
             "We're sorry. Something went wrong on our end. Please try again later."
